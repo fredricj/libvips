@@ -1469,7 +1469,8 @@ vips_region_shrink_uncoded(VipsRegion *from,
 \
 			/* Output alpha. \
 			 */ \
-			double a = (a1 + a2 + a3 + a4) / 4.0; \
+			int ac = (int)(a1>0)+(int)(a2>0)+(int)(a3>0)+(int)(a4>0); \
+			double a = (a1 + a2 + a3 + a4) / ac; \
 \
 			if (a == 0) { \
 				for (z = 0; z < nb; z++) \
@@ -1477,9 +1478,13 @@ vips_region_shrink_uncoded(VipsRegion *from,
 			} \
 			else { \
 				for (z = 0; z < nb - 1; z++) \
-					tq[z] = (a1 * tp[z] + a2 * tp[z + nb] + \
-								a3 * tp1[z] + a4 * tp1[z + nb]) / \
-						(4.0 * a); \
+					tq[z] = ( \
+					(a1>0 ? a1 * tp[z] : 0) + \
+					(a2>0 ? a2 * tp[z + nb] : 0) + \
+					(a3>0 ? a3 * tp1[z] : 0) + \
+					(a4>0 ? a4 * tp1[z + nb] : 0) \
+					) / \
+				(ac * a); \
 				tq[z] = a; \
 			} \
 \
